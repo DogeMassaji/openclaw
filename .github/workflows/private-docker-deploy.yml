@@ -1,0 +1,56 @@
+# OpenClaw - 自动部署到私有 Docker 仓库
+# Push 到 main 分支自动部署到服务器
+
+name: OpenClaw - Private Docker Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - "**/*.mdx"
+      - ".agents/**"
+      - "skills/**"
+
+env:
+  IMAGE_NAME: openclaw
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.DOCKER_HUB_URL }}
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_HUB_URL }}/${{ secrets.DOCKER_HUB_NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: SSH
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            bash /home/application/scripts/startOpenclaw.sh
+          host: ${{ secrets.SERVER_HOST }}
+          user: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_PRIVATE_KEY }}
