@@ -45,12 +45,3 @@ jobs:
             ${{ secrets.DOCKER_HUB_URL }}/${{ secrets.DOCKER_HUB_NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: SSH
-        uses: fifsky/ssh-action@master
-        with:
-          command: |
-            bash /home/application/scripts/startOpenclaw.sh
-          host: ${{ secrets.SERVER_HOST }}
-          user: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_PRIVATE_KEY }}
