@@ -43,5 +43,7 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKER_HUB_URL }}/${{ secrets.DOCKER_HUB_NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
+          build-args: |
+            OPENCLAW_INSTALL_BROWSER=1
           cache-from: type=gha
           cache-to: type=gha,mode=max
