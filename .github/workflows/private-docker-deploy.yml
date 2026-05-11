@@ -1,11 +1,11 @@
 # OpenClaw - 自动部署到私有 Docker 仓库
-# Push 到 main 分支自动部署到服务器
+# Push 到 dev 分支自动部署到服务器
 
 name: OpenClaw - Private Docker Deploy
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "dev" ]
     paths-ignore:
       - "docs/**"
       - "**/*.md"
